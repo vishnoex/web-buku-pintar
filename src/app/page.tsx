@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import HomeView from '../views/HomeView';
+import HomeView from '@/views/HomeView';
 
 export const metadata: Metadata = {
   title: 'BukuPintar',

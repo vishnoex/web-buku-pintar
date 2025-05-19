@@ -12,7 +12,7 @@ export class BaseService {
     return response.json();
   }
 
-  protected async post<T>(endpoint: string, data: any): Promise<ApiResponse<T>> {
+  protected async post<T, D = Record<string, unknown>>(endpoint: string, data: D): Promise<ApiResponse<T>> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'POST',
       headers: {

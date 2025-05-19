@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Ebook } from '@/models/Ebook';
 
 interface BookCardProps {
   book: Ebook;
+  displayAudioPlayer?: boolean;
   onPlay?: () => void;
   onClick?: () => void;
 }
 
 const BookCard: React.FC<BookCardProps> = ({
   book,
+  displayAudioPlayer = false,
   onPlay,
-  onClick,
 }) => {
   const [hovered, setHovered] = useState(false);
 
@@ -22,10 +24,12 @@ const BookCard: React.FC<BookCardProps> = ({
       style={{ minHeight: 340 }}
     >
       <div className="w-40 h-56 bg-white rounded-lg flex items-center justify-center mb-4 overflow-hidden">
-        <img
+        <Image 
           src={book.coverImage}
           alt={book.title}
-          className="object-contain w-full h-full"
+          width={160}
+          height={224}
+          className="object-contain w-full"
         />
       </div>
       <div className="text-center mb-2">
@@ -36,7 +40,7 @@ const BookCard: React.FC<BookCardProps> = ({
         )}
       </div>
       {/* Audio player appears on hover */}
-      {hovered && (
+      {(hovered && displayAudioPlayer) && (
         <div className="absolute left-0 bottom-0 w-full bg-[#18304A] rounded-b-2xl flex items-center px-4 py-3 transition-all">
           <button
             className="w-8 h-8 rounded-full bg-white flex items-center justify-center mr-3"
