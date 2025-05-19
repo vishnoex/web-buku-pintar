@@ -1,23 +1,31 @@
-import { useState, useCallback } from 'react';
-
 export class BaseViewModel<T> {
   protected state: T;
-  protected setState: React.Dispatch<React.SetStateAction<T>>;
+  protected listeners: Array<(state: T) => void> = [];
 
   constructor(initialState: T) {
-    const [state, setState] = useState<T>(initialState);
-    this.state = state;
-    this.setState = setState;
+    this.state = initialState;
   }
 
   protected updateState(partialState: Partial<T>): void {
-    this.setState((prevState: T) => ({
-      ...prevState,
+    this.state = {
+      ...this.state,
       ...partialState,
-    }));
+    };
+    this.notifyListeners();
   }
 
   protected resetState(): void {
-    this.setState(this.state);
+    this.notifyListeners();
+  }
+
+  subscribe(listener: (state: T) => void): () => void {
+    this.listeners.push(listener);
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener);
+    };
+  }
+
+  private notifyListeners(): void {
+    this.listeners.forEach(listener => listener(this.state));
   }
 } 

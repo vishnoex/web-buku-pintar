@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Ebook } from '@/models/Ebook';
 
 interface BookCardProps {
@@ -12,7 +13,6 @@ const BookCard: React.FC<BookCardProps> = ({
   book,
   displayAudioPlayer = false,
   onPlay,
-  onClick,
 }) => {
   const [hovered, setHovered] = useState(false);
 
@@ -24,9 +24,11 @@ const BookCard: React.FC<BookCardProps> = ({
       style={{ minHeight: 340 }}
     >
       <div className="w-40 h-56 bg-white rounded-lg flex items-center justify-center mb-4 overflow-hidden">
-        <img
+        <Image 
           src={book.coverImage}
           alt={book.title}
+          width={160}
+          height={224}
           className="object-contain w-full"
         />
       </div>

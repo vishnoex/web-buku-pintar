@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cn } from '@/utils/utils';
 import { Button } from '@/components/atoms/button';
 
@@ -29,7 +30,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className }) => {
             </div>
           </div>
           <div className="flex items-center justify-center">
-            <img
+            <Image
               alt="Hero Image"
               className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last animate-fade-in"
               src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070"
