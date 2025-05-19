@@ -4,9 +4,9 @@
 
 - [ ] Home page
   - [x] Hero section
-  - [ ] Highlight section
-  - [ ] Resume section
-  - [ ] Top Book section
+  - [x] Highlight section
+  - [x] Resume section
+  - [x] Top Book section
   - [ ] Inspiration section
   - [ ] Latest Article section
 - [ ] Books page
