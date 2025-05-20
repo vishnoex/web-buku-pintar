@@ -19,8 +19,8 @@ jobs:
     steps:
     - name: Check Secret
       env:
-        SUPER_SECRET : ${{ secrets.AWS_ACCESS_KEY_ID }}
-        SUPER_SECRET_VAR : ${{ vars.AWS_ACCESS_KEY_ID }}
+        SUPER_SECRET : ${{ secrets.AWS_LIGHTSAIL.ID }}
+        SUPER_SECRET_VAR : ${{ vars.AWS_LIGHTSAIL.ID }}
       run: |
         echo ${{ env.SUPER_SECRET }}
         echo ${{ env.SUPER_SECRET_VAR }}
