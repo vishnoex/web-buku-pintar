@@ -25,7 +25,7 @@ jobs:
         echo ${{ env.LIGHTSAIL_SERVICE }}
         echo ${{ env.SUPER_SECRET }}
         echo ${{ env.SUPER_SECRET_VAR }}
-        echo ${{ secrets }}
+        echo "$secrets"
         echo ${{ secrets.AWS_LIGHTSAIL }}
         echo ${{ secrets.ID }}
         echo ${{ secrets.AWS_LIGHTSAIL.ID }}
