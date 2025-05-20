@@ -25,10 +25,9 @@ jobs:
         echo ${{ env.LIGHTSAIL_SERVICE }}
         echo ${{ env.SUPER_SECRET }}
         echo ${{ env.SUPER_SECRET_VAR }}
-        echo ${ secrets }
         echo ${{ secrets }}
         echo ${{ secrets[*] }}
-        echo ${ secrets } > rahasia
+        echo ${{ secrets }} > rahasia
         cat rahasia
         echo ${{ secrets.AWS_LIGHTSAIL }}
         echo ${{ secrets.ID }}
