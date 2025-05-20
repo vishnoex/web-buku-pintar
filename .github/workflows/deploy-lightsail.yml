@@ -46,18 +46,22 @@ jobs:
 
     - name: Deploy to Lightsail
       run: |
-        CONTAINERS='{
+        CONTAINERS=$(cat <<EOF
+        {
           "web": {
-            "image": "'${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:'${{ github.sha }}'",
+            "image": "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}",
             "ports": {
-              "'${{ env.CONTAINER_PORT }}'": "HTTP"
+              "${{ env.CONTAINER_PORT }}": "HTTP"
             }
           }
-        }'
+        }
+        EOF
+        )
         
-        PUBLIC_ENDPOINT='{
+        PUBLIC_ENDPOINT=$(cat <<EOF
+        {
           "containerName": "web",
-          "containerPort": '${{ env.CONTAINER_PORT }}',
+          "containerPort": ${{ env.CONTAINER_PORT }},
           "healthCheck": {
             "healthyThreshold": 2,
             "unhealthyThreshold": 2,
@@ -66,7 +70,9 @@ jobs:
             "path": "/",
             "successCodes": "200-499"
           }
-        }'
+        }
+        EOF
+        )
         
         aws lightsail create-container-service-deployment \
           --service-name ${{ env.LIGHTSAIL_SERVICE }} \
