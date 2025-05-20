@@ -17,14 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Check Secret
-      env:
-        SUPER_SECRET : ${{ secrets.AWS_ACCESS_KEY_ID }}
-      run: |
-        echo ${{ env.LIGHTSAIL_SERVICE }}
-        echo ${{ env.SUPER_SECRET }}
-        echo ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        
     - name: Checkout
       uses: actions/checkout@v4
 
