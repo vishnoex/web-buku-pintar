@@ -36,6 +36,26 @@ jobs:
         aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} || \
         aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }}
 
+    - name: Create Lightsail container service if not exists
+      run: |
+        if ! aws lightsail get-container-services --service-name ${{ env.LIGHTSAIL_SERVICE }} 2>/dev/null; then
+          aws lightsail create-container-service \
+            --service-name ${{ env.LIGHTSAIL_SERVICE }} \
+            --power small \
+            --scale 1
+          
+          # Wait for the service to be ready
+          echo "Waiting for container service to be ready..."
+          while true; do
+            STATUS=$(aws lightsail get-container-services --service-name ${{ env.LIGHTSAIL_SERVICE }} --query 'containerServices[0].state' --output text)
+            if [ "$STATUS" = "RUNNING" ]; then
+              break
+            fi
+            echo "Current status: $STATUS"
+            sleep 30
+          done
+        fi
+
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
