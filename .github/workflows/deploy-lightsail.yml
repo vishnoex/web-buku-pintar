@@ -17,6 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Check Secret
+      env:
+        SUPER_SECRET : ${{ secrets.AWS_ACCESS_KEY_ID }}
+      run: |
+        echo $SUPER_SECRET
     - name: Checkout
       uses: actions/checkout@v4
 
