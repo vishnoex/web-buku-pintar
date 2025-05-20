@@ -27,56 +27,69 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
+    - name: Verify AWS credentials
+      run: |
+        aws sts get-caller-identity
+        aws lightsail get-instances --query 'instances[0].name' --output text
+
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
     - name: Create ECR repository if not exists
       run: |
-        aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} || \
-        aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }}
+        if ! aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} 2>/dev/null; then
+          echo "Creating ECR repository..."
+          aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }}
+        else
+          echo "ECR repository already exists"
+        fi
 
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
+        echo "Building and pushing Docker image..."
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
     - name: Deploy to Lightsail Instance
       run: |
-        # Get the instance's public IP
+        echo "Getting instance IP..."
         INSTANCE_IP=$(aws lightsail get-instance --instance-name ${{ env.LIGHTSAIL_INSTANCE }} --query 'instance.publicIpAddress' --output text)
+        echo "Instance IP: $INSTANCE_IP"
         
         # Create deployment script
         cat > deploy.sh << 'EOF'
         #!/bin/bash
         set -e
         
-        # Login to ECR
+        echo "Logging into ECR..."
         aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
         
-        # Pull the latest image
+        echo "Pulling latest image..."
         docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
         
-        # Stop and remove existing container if it exists
+        echo "Stopping existing container..."
         docker stop buku-pintar-web || true
         docker rm buku-pintar-web || true
         
-        # Run the new container
+        echo "Starting new container..."
         docker run -d \
           --name buku-pintar-web \
           -p ${{ env.CONTAINER_PORT }}:${{ env.CONTAINER_PORT }} \
           --restart unless-stopped \
           ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+        
+        echo "Deployment completed successfully"
         EOF
         
         # Make the script executable
         chmod +x deploy.sh
         
-        # Copy the script to the instance
+        echo "Copying deployment script to instance..."
         scp -o StrictHostKeyChecking=no -i ${{ secrets.LIGHTSAIL_SSH_KEY }} deploy.sh ubuntu@$INSTANCE_IP:~/
         
-        # Execute the script on the instance
+        echo "Executing deployment script..."
         ssh -o StrictHostKeyChecking=no -i ${{ secrets.LIGHTSAIL_SSH_KEY }} ubuntu@$INSTANCE_IP "sudo ./deploy.sh" 
