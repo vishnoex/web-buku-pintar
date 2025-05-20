@@ -46,25 +46,29 @@ jobs:
 
     - name: Deploy to Lightsail
       run: |
+        CONTAINERS='{
+          "web": {
+            "image": "'${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:'${{ github.sha }}'",
+            "ports": {
+              "'${{ env.CONTAINER_PORT }}'": "HTTP"
+            }
+          }
+        }'
+        
+        PUBLIC_ENDPOINT='{
+          "containerName": "web",
+          "containerPort": '${{ env.CONTAINER_PORT }}',
+          "healthCheck": {
+            "healthyThreshold": 2,
+            "unhealthyThreshold": 2,
+            "timeoutSeconds": 2,
+            "intervalSeconds": 5,
+            "path": "/",
+            "successCodes": "200-499"
+          }
+        }'
+        
         aws lightsail create-container-service-deployment \
           --service-name ${{ env.LIGHTSAIL_SERVICE }} \
-          --containers '{
-            "web": {
-              "image": "'${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:'${{ github.sha }}'",
-              "ports": {
-                "'${{ env.CONTAINER_PORT }}'": "HTTP"
-              }
-            }
-          }' \
-          --public-endpoint '{
-            "containerName": "web",
-            "containerPort": '${{ env.CONTAINER_PORT }}',
-            "healthCheck": {
-              "healthyThreshold": 2,
-              "unhealthyThreshold": 2,
-              "timeoutSeconds": 2,
-              "intervalSeconds": 5,
-              "path": "/",
-              "successCodes": "200-499"
-            }
-          }' 
+          --containers "$CONTAINERS" \
+          --public-endpoint "$PUBLIC_ENDPOINT" 
