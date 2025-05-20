@@ -51,8 +51,41 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: |
         echo "Building and pushing Docker image..."
+        # Build the image
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        
+        # Verify ECR login
+        echo "Verifying ECR login..."
+        aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+        
+        # Tag the image
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        
+        # Push with retry logic
+        echo "Pushing image to ECR..."
+        max_attempts=3
+        attempt=1
+        while [ $attempt -le $max_attempts ]; do
+          echo "Push attempt $attempt of $max_attempts"
+          if docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG; then
+            echo "Successfully pushed image with tag: $IMAGE_TAG"
+            if docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest; then
+              echo "Successfully pushed latest tag"
+              break
+            else
+              echo "Failed to push latest tag"
+            fi
+          else
+            echo "Failed to push image with tag: $IMAGE_TAG"
+            if [ $attempt -eq $max_attempts ]; then
+              echo "All push attempts failed"
+              exit 1
+            fi
+            echo "Retrying in 5 seconds..."
+            sleep 5
+          fi
+          attempt=$((attempt + 1))
+        done
 
     - name: Deploy to Lightsail Instance
       run: |
