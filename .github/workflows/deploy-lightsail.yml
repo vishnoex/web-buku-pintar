@@ -87,6 +87,14 @@ jobs:
           attempt=$((attempt + 1))
         done
 
+    # - name: Retreive IP Instance
+    #   run: |
+    #       # Get instance IP
+    #       echo "Getting instance IP..."
+    #       INSTANCE_IP=$(aws lightsail get-instance --instance-name ${{ env.LIGHTSAIL_INSTANCE }} --query 'instance.publicIpAddress' --output text)
+    #       echo "Instance IP: $INSTANCE_IP"
+          
+
     # - name: Verify SSH Key and Instance Access
     #   run: |
     #     echo "Verifying SSH key..."
@@ -123,45 +131,73 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         command_timeout: 30m
-        script: | 
-          echo "Nice Job!!!"
+        script: |
+          # Create deployment script
+          cat > deploy.sh << 'EOF'
+          #!/bin/bash
+          set -e
+          
+          echo "Logging into ECR..."
+          aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+          
+          echo "Pulling latest image..."
+          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          
+          echo "Stopping existing container..."
+          docker stop buku-pintar-web || true
+          docker rm buku-pintar-web || true
+          
+          echo "Starting new container..."
+          docker run -d \
+            --name buku-pintar-web \
+            -p ${{ env.CONTAINER_PORT }}:${{ env.CONTAINER_PORT }} \
+            --restart unless-stopped \
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          
+          echo "Deployment completed successfully"
+          EOF
+          
+          # Make the script executable
+          chmod +x deploy.sh
 
-    - name: Deploy to Lightsail Instance
-      run: |
-        echo "Getting instance IP..."
-        INSTANCE_IP=$(aws lightsail get-instance --instance-name ${{ env.LIGHTSAIL_INSTANCE }} --query 'instance.publicIpAddress' --output text)
-        echo "Instance IP: $INSTANCE_IP"
+          sudo ./deploy.sh
+
+    # - name: Deploy to Lightsail Instance
+    #   run: |
+    #     echo "Getting instance IP..."
+    #     INSTANCE_IP=$(aws lightsail get-instance --instance-name ${{ env.LIGHTSAIL_INSTANCE }} --query 'instance.publicIpAddress' --output text)
+    #     echo "Instance IP: $INSTANCE_IP"
         
-        # Create deployment script
-        cat > deploy.sh << 'EOF'
-        #!/bin/bash
-        set -e
+    #     # Create deployment script
+    #     cat > deploy.sh << 'EOF'
+    #     #!/bin/bash
+    #     set -e
         
-        echo "Logging into ECR..."
-        aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+    #     echo "Logging into ECR..."
+    #     aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
         
-        echo "Pulling latest image..."
-        docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+    #     echo "Pulling latest image..."
+    #     docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
         
-        echo "Stopping existing container..."
-        docker stop buku-pintar-web || true
-        docker rm buku-pintar-web || true
+    #     echo "Stopping existing container..."
+    #     docker stop buku-pintar-web || true
+    #     docker rm buku-pintar-web || true
         
-        echo "Starting new container..."
-        docker run -d \
-          --name buku-pintar-web \
-          -p ${{ env.CONTAINER_PORT }}:${{ env.CONTAINER_PORT }} \
-          --restart unless-stopped \
-          ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+    #     echo "Starting new container..."
+    #     docker run -d \
+    #       --name buku-pintar-web \
+    #       -p ${{ env.CONTAINER_PORT }}:${{ env.CONTAINER_PORT }} \
+    #       --restart unless-stopped \
+    #       ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
         
-        echo "Deployment completed successfully"
-        EOF
+    #     echo "Deployment completed successfully"
+    #     EOF
         
-        # Make the script executable
-        chmod +x deploy.sh
+    #     # Make the script executable
+    #     chmod +x deploy.sh
         
-        echo "Copying deployment script to instance..."
-        scp -o StrictHostKeyChecking=no -i ${{ secrets.KEY }} deploy.sh ubuntu@$INSTANCE_IP:~/
+    #     echo "Copying deployment script to instance..."
+    #     scp -o StrictHostKeyChecking=no -i ${{ secrets.KEY }} deploy.sh ubuntu@$INSTANCE_IP:~/
         
-        echo "Executing deployment script..."
-        ssh -o StrictHostKeyChecking=no -i ${{ secrets.KEY }} ubuntu@$INSTANCE_IP "sudo ./deploy.sh" 
+    #     echo "Executing deployment script..."
+    #     ssh -o StrictHostKeyChecking=no -i ${{ secrets.KEY }} ubuntu@$INSTANCE_IP "sudo ./deploy.sh" 
