@@ -99,7 +99,7 @@ jobs:
     #   run: |
     #     echo "Verifying SSH key..."
     #     # Save the SSH key to a file
-    #     echo "${{ secrets.LIGHTSAIL_SSH_KEY }}" > lightsail_key.pem
+    #     echo "${{ secrets.KEY }}" > lightsail_key.pem
     #     chmod 600 lightsail_key.pem
         
     #     # Get instance IP
@@ -137,6 +137,19 @@ jobs:
           #!/bin/bash
           set -e
           
+          # Configure AWS credentials
+          echo "Configuring AWS credentials..."
+          mkdir -p ~/.aws
+          cat > ~/.aws/credentials << 'CREDENTIALS'
+          [default]
+          aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region=${{ env.AWS_REGION }}
+          CREDENTIALS
+          
+          # Set proper permissions
+          chmod 600 ~/.aws/credentials
+          
           echo "Logging into ECR..."
           aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
           
@@ -155,16 +168,19 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
           
           echo "Deployment completed successfully"
+          
+          # Clean up AWS credentials
+          rm -rf ~/.aws
           EOF
           
           # Make the script executable
           chmod +x deploy.sh
-
+          
           sudo ./deploy.sh
 
     # - name: Deploy to Lightsail Instance
     #   run: |
-    #     echo "Getting instance IP..."
+    #     # Get the instance's public IP
     #     INSTANCE_IP=$(aws lightsail get-instance --instance-name ${{ env.LIGHTSAIL_INSTANCE }} --query 'instance.publicIpAddress' --output text)
     #     echo "Instance IP: $INSTANCE_IP"
         
@@ -173,16 +189,20 @@ jobs:
     #     #!/bin/bash
     #     set -e
         
+    #     # Get ECR login token and login to Docker
     #     echo "Logging into ECR..."
-    #     aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+    #     aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }} --password-stdin
         
+    #     # Pull the latest image
     #     echo "Pulling latest image..."
     #     docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
         
+    #     # Stop and remove existing container if it exists
     #     echo "Stopping existing container..."
     #     docker stop buku-pintar-web || true
     #     docker rm buku-pintar-web || true
         
+    #     # Run the new container
     #     echo "Starting new container..."
     #     docker run -d \
     #       --name buku-pintar-web \
@@ -196,8 +216,10 @@ jobs:
     #     # Make the script executable
     #     chmod +x deploy.sh
         
+    #     # Copy the script to the instance
     #     echo "Copying deployment script to instance..."
     #     scp -o StrictHostKeyChecking=no -i ${{ secrets.KEY }} deploy.sh ubuntu@$INSTANCE_IP:~/
         
+    #     # Execute the script on the instance
     #     echo "Executing deployment script..."
     #     ssh -o StrictHostKeyChecking=no -i ${{ secrets.KEY }} ubuntu@$INSTANCE_IP "sudo ./deploy.sh" 
