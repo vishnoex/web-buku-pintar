@@ -87,33 +87,44 @@ jobs:
           attempt=$((attempt + 1))
         done
 
+    # - name: Verify SSH Key and Instance Access
+    #   run: |
+    #     echo "Verifying SSH key..."
+    #     # Save the SSH key to a file
+    #     echo "${{ secrets.LIGHTSAIL_SSH_KEY }}" > lightsail_key.pem
+    #     chmod 600 lightsail_key.pem
+        
+    #     # Get instance IP
+    #     echo "Getting instance IP..."
+    #     INSTANCE_IP=$(aws lightsail get-instance --instance-name ${{ env.LIGHTSAIL_INSTANCE }} --query 'instance.publicIpAddress' --output text)
+    #     echo "Instance IP: $INSTANCE_IP"
+        
+    #     # Test SSH connection
+    #     echo "Testing SSH connection..."
+    #     if ssh -o StrictHostKeyChecking=no -i lightsail_key.pem ubuntu@$INSTANCE_IP "echo 'SSH connection successful'"; then
+    #       echo "SSH key is valid and connection successful"
+    #     else
+    #       echo "SSH connection failed. Please check:"
+    #       echo "1. The SSH key is correctly set in GitHub secrets"
+    #       echo "2. The key is in the correct format (should be the private key)"
+    #       echo "3. The key is added to the instance's authorized_keys"
+    #       echo "4. The instance's security group allows SSH access (port 22)"
+    #       exit 1
+    #     fi
+        
+    #     # Clean up
+    #     rm lightsail_key.pem
+
     - name: Verify SSH Key and Instance Access
-      run: |
-        echo "Verifying SSH key..."
-        # Save the SSH key to a file
-        echo "${{ secrets.LIGHTSAIL_SSH_KEY }}" > lightsail_key.pem
-        chmod 600 lightsail_key.pem
-        
-        # Get instance IP
-        echo "Getting instance IP..."
-        INSTANCE_IP=$(aws lightsail get-instance --instance-name ${{ env.LIGHTSAIL_INSTANCE }} --query 'instance.publicIpAddress' --output text)
-        echo "Instance IP: $INSTANCE_IP"
-        
-        # Test SSH connection
-        echo "Testing SSH connection..."
-        if ssh -o StrictHostKeyChecking=no -i lightsail_key.pem ubuntu@$INSTANCE_IP "echo 'SSH connection successful'"; then
-          echo "SSH key is valid and connection successful"
-        else
-          echo "SSH connection failed. Please check:"
-          echo "1. The SSH key is correctly set in GitHub secrets"
-          echo "2. The key is in the correct format (should be the private key)"
-          echo "3. The key is added to the instance's authorized_keys"
-          echo "4. The instance's security group allows SSH access (port 22)"
-          exit 1
-        fi
-        
-        # Clean up
-        rm lightsail_key.pem
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: 13.212.172.178
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        command_timeout: 30m
+        script: | 
+          echo "Nice Job!!!"
 
     - name: Deploy to Lightsail Instance
       run: |
