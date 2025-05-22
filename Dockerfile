@@ -30,7 +30,7 @@ COPY --from=builder /app/bun.lock ./bun.lock
 RUN bun install --frozen-lockfile --production
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 3030
 
 # Start the application
 CMD ["bun", "run", "start"] 

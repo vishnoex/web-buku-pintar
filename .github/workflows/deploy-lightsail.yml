@@ -9,7 +9,7 @@ env:
   AWS_REGION: ap-southeast-1
   ECR_REPOSITORY: buku-pintar-web
   LIGHTSAIL_INSTANCE: vishnoex-2gb
-  CONTAINER_PORT: 3003
+  CONTAINER_PORT: 3030
 
 jobs:
   deploy:
@@ -87,46 +87,17 @@ jobs:
           attempt=$((attempt + 1))
         done
 
-    # - name: Retreive IP Instance
-    #   run: |
-    #       # Get instance IP
-    #       echo "Getting instance IP..."
-    #       INSTANCE_IP=$(aws lightsail get-instance --instance-name ${{ env.LIGHTSAIL_INSTANCE }} --query 'instance.publicIpAddress' --output text)
-    #       echo "Instance IP: $INSTANCE_IP"
-          
+    - name: Get Instance IP
+      id: get-ip
+      run: |
+        INSTANCE_IP=$(aws lightsail get-instance --instance-name ${{ env.LIGHTSAIL_INSTANCE }} --query 'instance.publicIpAddress' --output text)
+        echo "instance_ip=$INSTANCE_IP" >> $GITHUB_OUTPUT
+        echo "Retrieved instance IP: $INSTANCE_IP"
 
-    # - name: Verify SSH Key and Instance Access
-    #   run: |
-    #     echo "Verifying SSH key..."
-    #     # Save the SSH key to a file
-    #     echo "${{ secrets.KEY }}" > lightsail_key.pem
-    #     chmod 600 lightsail_key.pem
-        
-    #     # Get instance IP
-    #     echo "Getting instance IP..."
-    #     INSTANCE_IP=$(aws lightsail get-instance --instance-name ${{ env.LIGHTSAIL_INSTANCE }} --query 'instance.publicIpAddress' --output text)
-    #     echo "Instance IP: $INSTANCE_IP"
-        
-    #     # Test SSH connection
-    #     echo "Testing SSH connection..."
-    #     if ssh -o StrictHostKeyChecking=no -i lightsail_key.pem ubuntu@$INSTANCE_IP "echo 'SSH connection successful'"; then
-    #       echo "SSH key is valid and connection successful"
-    #     else
-    #       echo "SSH connection failed. Please check:"
-    #       echo "1. The SSH key is correctly set in GitHub secrets"
-    #       echo "2. The key is in the correct format (should be the private key)"
-    #       echo "3. The key is added to the instance's authorized_keys"
-    #       echo "4. The instance's security group allows SSH access (port 22)"
-    #       exit 1
-    #     fi
-        
-    #     # Clean up
-    #     rm lightsail_key.pem
-
-    - name: Verify SSH Key and Instance Access
+    - name: Deploy to Lightsail Instance
       uses: appleboy/ssh-action@v0.1.10
       with:
-        host: 13.212.172.178
+        host: ${{ steps.get-ip.outputs.instance_ip }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
@@ -177,49 +148,3 @@ jobs:
           chmod +x deploy.sh
           
           sudo ./deploy.sh
-
-    # - name: Deploy to Lightsail Instance
-    #   run: |
-    #     # Get the instance's public IP
-    #     INSTANCE_IP=$(aws lightsail get-instance --instance-name ${{ env.LIGHTSAIL_INSTANCE }} --query 'instance.publicIpAddress' --output text)
-    #     echo "Instance IP: $INSTANCE_IP"
-        
-    #     # Create deployment script
-    #     cat > deploy.sh << 'EOF'
-    #     #!/bin/bash
-    #     set -e
-        
-    #     # Get ECR login token and login to Docker
-    #     echo "Logging into ECR..."
-    #     aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }} --password-stdin
-        
-    #     # Pull the latest image
-    #     echo "Pulling latest image..."
-    #     docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-        
-    #     # Stop and remove existing container if it exists
-    #     echo "Stopping existing container..."
-    #     docker stop buku-pintar-web || true
-    #     docker rm buku-pintar-web || true
-        
-    #     # Run the new container
-    #     echo "Starting new container..."
-    #     docker run -d \
-    #       --name buku-pintar-web \
-    #       -p ${{ env.CONTAINER_PORT }}:${{ env.CONTAINER_PORT }} \
-    #       --restart unless-stopped \
-    #       ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-        
-    #     echo "Deployment completed successfully"
-    #     EOF
-        
-    #     # Make the script executable
-    #     chmod +x deploy.sh
-        
-    #     # Copy the script to the instance
-    #     echo "Copying deployment script to instance..."
-    #     scp -o StrictHostKeyChecking=no -i ${{ secrets.KEY }} deploy.sh ubuntu@$INSTANCE_IP:~/
-        
-    #     # Execute the script on the instance
-    #     echo "Executing deployment script..."
-    #     ssh -o StrictHostKeyChecking=no -i ${{ secrets.KEY }} ubuntu@$INSTANCE_IP "sudo ./deploy.sh" 
