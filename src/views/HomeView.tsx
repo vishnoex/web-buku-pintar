@@ -4,6 +4,8 @@ import HeroSection from '@/components/organisms/HeroSection';
 import BookSummaryCarousel from '@/components/organisms/BookSummaryCarousel';
 import HighlightSection from '@/components/organisms/HighlightSection';
 import TopBookSection from '@/components/organisms/TopBookSection';
+import InspirationSection from '@/components/organisms/InspirationSection';
+import ArticleSection from '@/components/organisms/ArticleSection';
 
 const HomeView: React.FC = () => {
   // const { title, description } = useHomeViewModel();
@@ -16,6 +18,8 @@ const HomeView: React.FC = () => {
         <HighlightSection className='bg-slate-50' />
         <BookSummaryCarousel />
         <TopBookSection className='bg-slate-50' />
+        <InspirationSection />
+        <ArticleSection className='bg-slate-50' />
       </main>
     </div>
   );
