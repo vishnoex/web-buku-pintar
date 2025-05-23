@@ -3,7 +3,7 @@
 import { Inspiration } from '@/models/Inspiration';
 import { faker } from '@faker-js/faker';
 
-export const mockInspirations: Inspiration[] = Array.from({ length: 20 }, (_, i) => ({
+export const mockInspirations: Inspiration[] = Array.from({ length: 20 }, () => ({
   id: faker.string.uuid(),
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent(),
