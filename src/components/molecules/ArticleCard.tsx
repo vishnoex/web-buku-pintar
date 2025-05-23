@@ -12,9 +12,11 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
   return (
     <Link href={`/articles/${article.slug}`} className="block group relative overflow-hidden rounded-lg border bg-white shadow-sm transition-all hover:shadow-md">
       <div className="aspect-video overflow-hidden">
-        <img
+        <Image
           src={article.coverImage}
           alt={article.title}
+          width={320}
+          height={224}
           className="object-cover w-full h-full transition-transform group-hover:scale-105"
         />
       </div>

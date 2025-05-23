@@ -9,7 +9,7 @@ faker.seed(123);
 
 export const useMockInspirations = (count: number = 10) => {
   return useMemo(() => {
-    const inspirations: Inspiration[] = Array.from({ length: 20 }, (_, i) => {
+    const inspirations: Inspiration[] = Array.from({ length: 20 }, () => {
       const hasQuote = faker.datatype.boolean({ probability: 0.7 });
       const hasRelatedLinks = faker.datatype.boolean({ probability: 0.5 });
       

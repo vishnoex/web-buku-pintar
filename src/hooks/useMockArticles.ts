@@ -9,7 +9,7 @@ faker.seed(123);
 
 export const useMockArticles = (count: number = 10) => {
   return useMemo(() => {
-    const articles: Article[] = Array.from({ length: 20 }, (_, i) => ({
+    const articles: Article[] = Array.from({ length: 20 }, () => ({
       id: faker.string.uuid(),
       createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),
