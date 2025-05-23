@@ -20,17 +20,18 @@ FROM oven/bun:1.2-slim
 
 WORKDIR /app
 
-# Copy built assets from builder
-COPY --from=builder /app/.next ./.next
+# Copy standalone output from builder
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/bun.lock ./bun.lock
 
-# Install production dependencies only
-RUN bun install --frozen-lockfile --production
+# Set environment variables
+ENV PORT=3030
+ENV HOSTNAME="0.0.0.0"
+ENV NODE_ENV=production
 
 # Expose the port the app runs on
 EXPOSE 3030
 
 # Start the application
-CMD ["bun", "run", "start"] 
+CMD ["bun", "server.js"] 
