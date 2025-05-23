@@ -7,8 +7,8 @@
   - [x] Highlight section
   - [x] Resume section
   - [x] Top Book section
-  - [ ] Inspiration section
-  - [ ] Latest Article section
+  - [x] Inspiration section
+  - [x] Latest Article section
 - [ ] Books page
   - [ ] Search function
   - [ ] Pagination

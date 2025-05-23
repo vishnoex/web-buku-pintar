@@ -12,6 +12,7 @@
     "@radix-ui/react-scroll-area": "^1.2.8",
     "@radix-ui/react-slot": "^1.2.2",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.510.0",
     "mobx": "^6.13.7",
     "next": "15.3.2",
