@@ -13,9 +13,9 @@ interface TopBookSectionProps {
 }
 
 const TopBookSection: React.FC<TopBookSectionProps> = ({ className }) => {
-  const allBooks = useMockBooks(20);
+  const allBooks = useMockBooks();
   const topBooks = React.useMemo(() => {
-    return [...allBooks]
+    return [...allBooks.books]
       .sort((a, b) => b.rating.average - a.rating.average)
       .slice(0, 8);
   }, [allBooks]);

@@ -1,4 +1,5 @@
 "use client";
+
 import Header from '@/components/organisms/Header';
 import HeroSection from '@/components/organisms/HeroSection';
 import BookSummaryCarousel from '@/components/organisms/BookSummaryCarousel';
