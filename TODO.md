@@ -2,7 +2,7 @@
 
 ## High Priority
 
-- [ ] Home page
+- [x] Home page
   - [x] Hero section
   - [x] Highlight section
   - [x] Resume section
@@ -11,7 +11,7 @@
   - [x] Latest Article section
 - [ ] Books page
   - [ ] Search function
-  - [ ] Pagination
+  - [x] Pagination (Infinite scroll)
 - [ ] Articles page
   - [ ] Search function
   - [ ] Pagination

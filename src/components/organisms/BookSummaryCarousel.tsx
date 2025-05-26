@@ -13,7 +13,7 @@ interface BookSummaryCarouselProps {
 }
 
 const BookSummaryCarousel: React.FC<BookSummaryCarouselProps> = ({ className }) => {
-  const displayedBooks = useMockBooks(10);
+  const displayedBooks = useMockBooks();
 
   return (
     <section className={cn("py-8 md:py-12", className)}>
@@ -31,7 +31,7 @@ const BookSummaryCarousel: React.FC<BookSummaryCarouselProps> = ({ className }) 
         <div className="relative w-full">
           <ScrollArea className="w-full">
             <div className="flex space-x-4 pb-4">
-              {displayedBooks.map((book) => (
+              {displayedBooks.books.map((book) => (
                 <BookCard key={book.id} book={book} displayAudioPlayer={true} />
               ))}
             </div>

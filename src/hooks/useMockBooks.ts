@@ -1,15 +1,20 @@
 "use client";
 
-import { useMemo } from 'react';
-import { Ebook } from '@/models/Ebook';
+import { useMemo, useState, useCallback } from 'react';
 import { faker } from '@faker-js/faker';
 
 // Seed faker to ensure consistent data generation
 faker.seed(123);
 
-export const useMockBooks = (count: number = 10) => {
-  return useMemo(() => {
-    const books: Ebook[] = Array.from({ length: 20 }, (_, i) => {
+const ITEMS_PER_PAGE = 8;
+
+export const useMockBooks = () => {
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const generateBooks = useCallback((count: number) => {
+    return Array.from({ length: count }, (_, i) => {
       const hasDiscount = faker.datatype.boolean({ probability: 0.3 });
       const isFree = faker.datatype.boolean({ probability: 0.2 });
       const hasAudioVersion = faker.datatype.boolean({ probability: 0.5 });
@@ -63,7 +68,35 @@ export const useMockBooks = (count: number = 10) => {
         },
       };
     });
+  }, []);
 
-    return books.slice(0, count);
-  }, [count]);
+  const books = useMemo(() => {
+    return generateBooks(page * ITEMS_PER_PAGE);
+  }, [page, generateBooks]);
+
+  const loadMore = useCallback(async () => {
+    if (loading || !hasMore) return;
+    
+    setLoading(true);
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setPage(prev => {
+      const nextPage = prev + 1;
+      // Stop loading more after 5 pages (40 books)
+      if (nextPage >= 5) {
+        setHasMore(false);
+      }
+      return nextPage;
+    });
+    
+    setLoading(false);
+  }, [loading, hasMore]);
+
+  return {
+    books,
+    loading,
+    hasMore,
+    loadMore,
+  };
 }; 
