@@ -21,10 +21,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className }) => {
               Ringkasan buku praktis yang bisa kamu baca atau dengar sambil ngopi, jalan atau rebahan.
             </p>
             <div className="flex flex-col gap-2 min-[400px]:flex-row animate-fade-in" style={{animationDelay: '0.2s'}}>
-              <Button asChild size="lg" className="bg-brand-blue hover:bg-brand-blue/90">
+              <Button asChild variant="ghost" size="lg" className="bg-brand-blue hover:bg-brand-blue/90">
                 <Link href="/books">Explore Books</Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
+              <Button asChild variant="destructive" size="lg">
                 <Link href="/write">Start Writing</Link>
               </Button>
             </div>

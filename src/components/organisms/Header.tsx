@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import BukuIcon from '@/assets/bp.svg';
 import { cn } from '@/utils/utils';
 import { BookOpen, Search, FileText, LogIn } from 'lucide-react';
 
@@ -10,7 +11,7 @@ const Header: React.FC = () => (
     <div className="container flex h-16 items-center justify-between">
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2 font-serif text-xl font-bold">
-        <BookOpen className="h-6 w-6" />
+        <BukuIcon width={24} />
         <span>BukuPintar</span>
       </Link>
 
@@ -32,7 +33,7 @@ const Header: React.FC = () => (
 
       <div className="flex items-center space-x-2">
         <Button 
-          variant="outline" 
+          variant="destructive" 
           size="sm" 
           className="hidden md:flex" 
           asChild
