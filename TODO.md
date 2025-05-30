@@ -15,7 +15,7 @@
 - [ ] Articles page
   - [ ] Search function
   - [ ] Pagination
-- [ ] Detail book page
+- [x] Detail book page
 - [ ] Detail article page
 
 ## Future Ideas
