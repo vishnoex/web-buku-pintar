@@ -7,6 +7,7 @@ import config from '@/config/app.config';
 export class BookViewModel {
   private bookService: BookService;
   books: Ebook[] = [];
+  currentBook: Ebook | null = null;
   loading = false;
   error: string | null = null;
   totalPages = 0;
@@ -83,6 +84,19 @@ export class BookViewModel {
       this.totalPages = result.totalPages;
       this.currentPage = result.currentPage;
     }
+  }
+
+  async getBookBySlug(slug: string) {
+    const result = await this.handleApiCall(
+      () => this.bookService.getBookBySlug(slug),
+      'Failed to load book details. Please try again.'
+    );
+
+    if (result) {
+      this.currentBook = result.data;
+    }
+
+    return result;
   }
 
   async retryLastOperation() {

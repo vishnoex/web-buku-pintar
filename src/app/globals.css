@@ -10,7 +10,7 @@
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
 
-  --primary: #6001d2;
+  --primary: oklch(0.4493 0.2527 290.64);
   --primary-foreground: #ffffff;
 
   --secondary: #C901D2;
@@ -91,4 +91,13 @@ body {
 
 .bg-secondary {
   background-color: var(--secondary);
+}
+
+@utility text-primary-* {
+  color: var(--primary);
+  font-weight: --value(integer);
+}
+
+@utility tab-primary-* {
+  background-color: oklch(0.4493 0.2527 290.64 / calc(--value(integer) * 1%));
 }
