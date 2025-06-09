@@ -16,7 +16,7 @@
   --secondary: #C901D2;
   --secondary-foreground: #ffffff;
 
-  --tertiary: #010AD2;
+  --tertiary: oklch(0.3034 0.0361 295.65);
   --tertiary-foreground: #ffffff;
 
   --muted: 210 40% 96.1%;
@@ -91,6 +91,14 @@ body {
 
 .bg-secondary {
   background-color: var(--secondary);
+}
+
+.bg-header {
+  background-color: var(--tertiary);
+}
+
+.content-center {
+  justify-content: center;
 }
 
 @utility text-primary-* {

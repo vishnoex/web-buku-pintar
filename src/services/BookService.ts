@@ -23,7 +23,7 @@ export class BookService extends BaseService {
 
   async getBooks(params: PaginationParams): Promise<PaginatedResponse<Ebook[]>> {
     if (config.useMockData) {
-      const mockBooks = generateMockBooks(20);
+      const mockBooks = generateMockBooks(params.limit);
       return this.getMockPaginatedResponse(mockBooks);
     }
     return this.getPaginated<Ebook[]>('', params);

@@ -7,16 +7,16 @@ import { BookOpen, Search, FileText, LogIn } from 'lucide-react';
 import { Button } from '@/components/atoms/button';
 
 const Header: React.FC = () => (
-  <header className={cn("w-full border-b bg-background")}>
+  <header className={cn("w-full border-b bg-header")}>
     <div className="container flex h-16 items-center justify-between">
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 font-serif text-xl font-bold">
+      <Link href="/" className="flex items-center gap-2 font-serif text-white">
         <BukuIcon width={24} />
-        <span>BukuPintar</span>
+        <span className="hidden md:block">BukuPintar</span>
       </Link>
 
       {/* Navigation */}
-      <nav className="hidden md:flex items-center space-x-6">
+      <nav className="hidden md:flex items-center space-x-6 text-white">
         <Link href="/books" className="flex items-center space-x-1 text-muted-foreground hover:text-foreground">
           <BookOpen className="h-4 w-4" />
           <span>Books</span>
@@ -40,7 +40,7 @@ const Header: React.FC = () => (
         >
           <Link href="/login">
             <LogIn className="mr-2 h-4 w-4" />
-            Sign in
+            Sign inu
           </Link>
         </Button>
         
@@ -51,8 +51,8 @@ const Header: React.FC = () => (
           asChild
         >
           <Link href="/login">
-            <LogIn className="h-5 w-5" />
-            <span className="sr-only">Sign in</span>
+            <LogIn className="h-5 w-5 text-white" />
+            <span className="sr-only">Sign inii</span>
           </Link>
         </Button>
       </div>
