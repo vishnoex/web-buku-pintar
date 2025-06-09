@@ -5,16 +5,17 @@ import BookCard from '@/components/molecules/BookCard';
 import Link from 'next/link';
 import { Button } from '@/components/atoms/button';
 import { ScrollArea, ScrollBar } from '@/components/atoms/scroll-area';
-import { useMockBooks } from '@/hooks/useMockBooks';
+import { Ebook } from '@/models/Ebook';
 import { cn } from '@/utils/utils';
 
 interface BookSummaryCarouselProps {
   className?: string;
+  books: Ebook[];
+  loading?: boolean;
+  error?: string | null;
 }
 
-const BookSummaryCarousel: React.FC<BookSummaryCarouselProps> = ({ className }) => {
-  const displayedBooks = useMockBooks();
-
+const BookSummaryCarousel: React.FC<BookSummaryCarouselProps> = ({ className, books, loading, error }) => {
   return (
     <section className={cn("py-8 md:py-12", className)}>
       <div className="container px-4 md:px-6">
@@ -31,7 +32,11 @@ const BookSummaryCarousel: React.FC<BookSummaryCarouselProps> = ({ className }) 
         <div className="relative w-full">
           <ScrollArea className="w-full">
             <div className="flex space-x-4 pb-4">
-              {displayedBooks.books.map((book) => (
+              {loading ? (
+                <div className="text-muted-foreground">Loading...</div>
+              ) : error ? (
+                <div className="text-red-500">{error}</div>
+              ) : books.map((book) => (
                 <BookCard key={book.id} book={book} displayAudioPlayer={true} />
               ))}
             </div>

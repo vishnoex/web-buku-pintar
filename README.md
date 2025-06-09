@@ -6,17 +6,19 @@ A modern web application built with Next.js using MVVM architecture, focusing on
 
 ```
 src/
-├── app/                # Next.js app directory
-├── components/         # Reusable UI components
-├── constants/          # Application constants
-├── hooks/              # Custom React hooks
-├── models/             # Data models and interfaces
-├── services/           # API and external service integrations
-├── styles/             # Global styles and CSS modules
-├── types/              # TypeScript type definitions
-├── utils/              # Utility functions
-├── viewmodels/         # ViewModels for state management
-└── views/              # View components
+├── app/              # Next.js app directory
+├── assets/           # Static assets like images and fonts
+├── components/       # Reusable UI components
+├── config/           # Application configuration
+├── constants/        # Application constants
+├── hooks/            # Custom React hooks
+├── models/           # Data models and interfaces
+├── services/         # API and external service integrations
+├── styles/           # Global styles and CSS modules
+├── types/            # TypeScript type definitions
+├── utils/            # Utility functions
+├── viewmodels/       # ViewModels for state management
+└── views/            # View components
 ```
 
 ## Features
