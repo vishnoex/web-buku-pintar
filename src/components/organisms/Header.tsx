@@ -2,8 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import BukuIcon from '@/assets/bp.svg';
 import { cn } from '@/utils/utils';
-import { BookOpen, Search, FileText, LogIn } from 'lucide-react';
-
+import { LogIn } from 'lucide-react';
 import { Button } from '@/components/atoms/button';
 
 const Header: React.FC = () => (
@@ -16,20 +15,7 @@ const Header: React.FC = () => (
       </Link>
 
       {/* Navigation */}
-      <nav className="hidden md:flex items-center space-x-6 text-white">
-        <Link href="/books" className="flex items-center space-x-1 text-muted-foreground hover:text-foreground">
-          <BookOpen className="h-4 w-4" />
-          <span>Books</span>
-        </Link>
-        <Link href="/articles" className="flex items-center space-x-1 text-muted-foreground hover:text-foreground">
-          <FileText className="h-4 w-4" />
-          <span>Articles</span>
-        </Link>
-        <Link href="/search" className="flex items-center space-x-1 text-muted-foreground hover:text-foreground">
-          <Search className="h-4 w-4" />
-          <span>Search</span>
-        </Link>
-      </nav>
+      {/* <Navigation /> */}
 
       <div className="flex items-center space-x-2">
         <Button 
@@ -40,7 +26,7 @@ const Header: React.FC = () => (
         >
           <Link href="/login">
             <LogIn className="mr-2 h-4 w-4" />
-            Sign inu
+            Sign in
           </Link>
         </Button>
         
@@ -52,7 +38,7 @@ const Header: React.FC = () => (
         >
           <Link href="/login">
             <LogIn className="h-5 w-5 text-white" />
-            <span className="sr-only">Sign inii</span>
+            <span className="sr-only">Sign ini</span>
           </Link>
         </Button>
       </div>

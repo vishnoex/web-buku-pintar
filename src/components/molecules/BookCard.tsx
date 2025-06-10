@@ -6,17 +6,34 @@ import Link from 'next/link';
 import { Ebook } from '@/models/Ebook';
 
 interface BookCardProps {
-  book: Ebook;
+  book?: Ebook;
   displayAudioPlayer?: boolean;
   onPlay?: () => void;
+  loading?: boolean;
 }
 
 const BookCard: React.FC<BookCardProps> = ({
   book,
   displayAudioPlayer = false,
   onPlay,
+  loading = false,
 }) => {
   const [hovered, setHovered] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="rounded-2xl bg-green-100 p-4 flex flex-col items-center shadow w-60 relative animate-pulse" style={{ minHeight: 340 }}>
+        <div className="w-40 h-56 bg-white rounded-lg mb-4"></div>
+        <div className="text-center mb-2 w-full">
+          <div className="h-3 bg-white rounded w-1/2 mx-auto mb-1"></div>
+          <div className="h-4 bg-white rounded w-3/4 mx-auto mb-1"></div>
+          <div className="h-3 bg-white rounded w-2/3 mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!book) return null;
 
   return (
     <Link href={`/books/${book.slug}`}>

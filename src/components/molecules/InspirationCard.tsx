@@ -2,64 +2,76 @@ import Image from 'next/image';
 import React from 'react';
 import Link from 'next/link';
 import { Inspiration } from '@/models/Inspiration';
-import { Heart, Share2, Bookmark } from 'lucide-react';
+import { Heart, BookOpen, Play } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface InspirationCardProps {
-  inspiration: Inspiration; // Accept the full Inspiration object
+  inspiration?: Inspiration;
+  loading?: boolean;
 }
 
 const InspirationCard: React.FC<InspirationCardProps> = ({
   inspiration,
+  loading = false,
 }) => {
+  if (loading) {
+    return (
+      <div className="block rounded-lg bg-white shadow-sm animate-pulse">
+        <div className="aspect-video overflow-hidden rounded-t-lg bg-gray-200"></div>
+        <div className="p-4 w-60">
+          <div className="h-5 bg-gray-200 rounded w-3/4 mb-4"></div>
+          <div className="flex space-x-2 mb-4">
+            <div className="flex-1 h-10 bg-gray-200 rounded-lg"></div>
+            <div className="flex-1 h-10 bg-gray-200 rounded-lg"></div>
+          </div>
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+            <div className="h-5 w-5 bg-gray-200 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!inspiration) return null;
+
   return (
-    <Link href={`/inspirations/${inspiration.slug}`} className="block group relative overflow-hidden rounded-lg border bg-white shadow-sm transition-all hover:shadow-md">
-      <div className="aspect-video overflow-hidden">
+    <div className="block group relative overflow-hidden rounded-lg bg-white shadow-sm transition-all hover:shadow-md">
+      <div className="aspect-video overflow-hidden rounded-t-lg mb-2">
         <Image
           src={inspiration.coverImage}
           alt={inspiration.title}
-          width={320} // Keep existing image dimensions if appropriate
+          width={320}
           height={224}
-          className="object-cover w-full h-full transition-transform group-hover:scale-105"
+          className="object-cover w-full h-full transition-transform"
         />
       </div>
-      <div className="p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-sm text-muted-foreground">{inspiration.source}</span>
-          <span className="text-sm text-muted-foreground">•</span>
-          <span className="text-sm text-muted-foreground">
-            {inspiration.publishedAt ? format(new Date(inspiration.publishedAt), 'MMM d, yyyy') : 'N/A'}
-          </span>
+
+      <div className="px-3 w-60">
+        <h3 className="font-semibold text-sm mb-2 line-clamp-2 text-gray-900">{inspiration.title}</h3>
+        <div className="grid grid-cols-2 gap-4 mb-3 text-xs">
+          <div>
+            <Link href={`/inspirations/${inspiration.slug}`} className="flex-1 px-4 py-2 bg-[#7B61FF] text-white rounded-lg flex items-center justify-center font-medium">
+              <span className="mr-2">Baca</span>
+              <BookOpen className="w-5 h-5" />
+            </Link>
+          </div>
+          <div>
+            <button className="flex-1 px-4 py-2 bg-[#7B61FF] text-white rounded-lg flex items-center justify-center font-medium">
+              <span className="mr-2">Dengar</span>
+              <Play className="w-5 h-5" />
+            </button>
+          </div>
         </div>
-        <h3 className="font-semibold text-lg mb-2 line-clamp-2">{inspiration.title}</h3>
-        <p className="text-muted-foreground mb-4 line-clamp-3">{inspiration.excerpt}</p>
-        {inspiration.quote && (
-          <blockquote className="border-l-4 border-brand-blue pl-4 italic mb-4">
-            &ldquo; {inspiration.quote} &rdquo;
-            {inspiration.authorQuote && (
-              <footer className="text-sm text-muted-foreground mt-2">
-                — {inspiration.authorQuote}
-              </footer>
-            )}
-          </blockquote>
-        )}
-        <div className="flex items-center gap-4 mt-4">
-          {/* Assuming these buttons are for interaction and not navigation */} 
-          <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-blue transition-colors">
-            <Heart className="w-4 h-4" />
-            <span>{inspiration.impact?.likes || 0}</span>
-          </button>
-          <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-blue transition-colors">
-            <Share2 className="w-4 h-4" />
-            <span>{inspiration.impact?.shares || 0}</span>
-          </button>
-          <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-blue transition-colors">
-            <Bookmark className="w-4 h-4" />
-            <span>{inspiration.impact?.saves || 0}</span>
+
+        <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+          <span className="text-xs">{inspiration.publishedAt ? format(new Date(inspiration.publishedAt), 'dd MMM yyyy') : 'N/A'}</span>
+          <button className="text-gray-400 hover:text-red-500 transition-colors">
+            <Heart className="w-5 h-5" />
           </button>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

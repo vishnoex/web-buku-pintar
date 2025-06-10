@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Merriweather } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "../styles/globals.css";
 
-const merriweather = Merriweather({
+const merriweather = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "700", "900"],
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
   display: "swap",
   variable: "--font-serif",
 });
