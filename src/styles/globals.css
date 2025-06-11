@@ -132,6 +132,20 @@ body {
   padding-right: calc(var(--spacing) * --value(integer));
 }
 
+@utility plc-* {
+  padding-left: calc(var(--spacing) * --value(integer));
+}
+
+@utility pyc-* {
+  padding-top: calc(var(--spacing) * --value(integer));
+  padding-bottom: calc(var(--spacing) * --value(integer));
+}
+
+@utility pxc-* {
+  padding-left: calc(var(--spacing) * --value(integer));
+  padding-right: calc(var(--spacing) * --value(integer));
+}
+
 @utility text-primary-* {
   color: var(--primary);
   font-weight: --value(integer);

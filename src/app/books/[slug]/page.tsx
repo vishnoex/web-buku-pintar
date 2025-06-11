@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import BookDetail from '@/views/BookDetail';
+import BookDetail from '@/views/BookDetailView';
 
 export const metadata: Metadata = {
   title: 'Book Details',

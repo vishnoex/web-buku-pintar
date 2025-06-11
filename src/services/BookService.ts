@@ -2,7 +2,7 @@ import { BaseService } from './BaseService';
 import { Ebook } from '@/models/Ebook';
 import { ApiResponse, PaginationParams, PaginatedResponse } from '@/types';
 import config from '@/config/app.config';
-import { generateMockBooks } from '@/models/mocks/books';
+import { generateMockEbooks } from '@/models/mocks/ebooks';
 
 export class BookService extends BaseService {
   constructor() {
@@ -23,18 +23,18 @@ export class BookService extends BaseService {
 
   async getBooks(params: PaginationParams): Promise<PaginatedResponse<Ebook[]>> {
     if (config.useMockData) {
-      const mockBooks = generateMockBooks(params.limit);
-      return this.getMockPaginatedResponse(mockBooks);
+      const mockEbooks = generateMockEbooks(params.limit);
+      return this.getMockPaginatedResponse(mockEbooks);
     }
     return this.getPaginated<Ebook[]>('', params);
   }
 
   async getBookBySlug(slug: string): Promise<ApiResponse<Ebook>> {
     if (config.useMockData) {
-      const mockBooks = generateMockBooks(1);
+      const mockEbooks = generateMockEbooks(1);
       await new Promise(resolve => setTimeout(resolve, config.mockDelay));
       return {
-        data: mockBooks[0],
+        data: mockEbooks[0],
         status: 200,
         message: 'Success',
       };
@@ -44,7 +44,7 @@ export class BookService extends BaseService {
 
   async searchBooks(query: string, params: PaginationParams): Promise<PaginatedResponse<Ebook[]>> {
     if (config.useMockData) {
-      const mockBooks = generateMockBooks(20).filter(book => 
+      const mockBooks = generateMockEbooks(20).filter(book => 
         book.title.toLowerCase().includes(query.toLowerCase()) ||
         book.description.toLowerCase().includes(query.toLowerCase())
       );
@@ -55,7 +55,7 @@ export class BookService extends BaseService {
 
   async getBooksByCategory(categoryId: string, params: PaginationParams): Promise<PaginatedResponse<Ebook[]>> {
     if (config.useMockData) {
-      const mockBooks = generateMockBooks(20);
+      const mockBooks = generateMockEbooks(20);
       return this.getMockPaginatedResponse(mockBooks);
     }
     return this.getPaginated<Ebook[]>(`/category/${categoryId}`, params);
