@@ -1,33 +1,37 @@
-import React from 'react';
-import { cn } from '@/utils/utils';
-import { Button } from '@/components/atoms/button';
-import Link from 'next/link';
-import ArticleCard from '@/components/molecules/ArticleCard';
-import { Article } from '@/models/Article';
-import { ScrollArea, ScrollBar } from '@/components/atoms/scroll-area';
+"use client";
 
-interface ArticleSectionProps {
+import React from 'react';
+import BookCard from '@/components/molecules/BookCard';
+import Link from 'next/link';
+import { Button } from '@/components/atoms/button';
+import { ScrollArea, ScrollBar } from '@/components/atoms/scroll-area';
+import { Ebook } from '@/models/Ebook';
+import { cn } from '@/utils/utils';
+
+interface BookSummaryPremiumProps {
   className?: string;
-  articles: Article[];
+  books: Ebook[];
   loading?: boolean;
   error?: string | null;
 }
 
-const ArticleSection: React.FC<ArticleSectionProps> = ({ className, articles, loading, error }) => {
+const BookSummaryCarousel: React.FC<BookSummaryPremiumProps> = ({ className, books, loading, error }) => {
   return (
     <section className={cn("py-2", className)}>
       <div className="container">
         <div className="flex items-center justify-between px-2">
           <div>
             <h2 className="text-base md:text-xl font-bold tracking-tight">
-              Artikel
+              Intisari Buku
             </h2>
-            <span className="text-xs">Ilmu cepat saji, tapi sehat.</span>
+            <span className="text-xs">
+              Intinya aja, yang penting ngerti. Poin-poin utama dalam buku untuk dapat insight dan Ilmunya.
+            </span>
           </div>
 
           <div className="margin-block-end">
             <Button asChild variant="ghost">
-              <Link href="/articles">Semua</Link>
+              <Link href="/books">Semua</Link>
             </Button>
           </div>
         </div>
@@ -36,17 +40,13 @@ const ArticleSection: React.FC<ArticleSectionProps> = ({ className, articles, lo
           <div className="flex gap-4 py-2 px-2">
             {loading ? (
               Array.from({ length: 5 }).map((_, index) => (
-                <ArticleCard key={index} loading />
+                <BookCard key={index} loading />
               ))
             ) : error ? (
               <div className="text-red-500">{error}</div>
-            ) : articles && articles.length > 0 ? (
-              articles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
-              ))
-            ) : (
-              <div className="text-muted-foreground">No articles available</div>
-            )}
+            ) : books.map((book) => (
+              <BookCard key={book.id} book={book} displayAudioPlayer={true} />
+            ))}
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
@@ -55,4 +55,4 @@ const ArticleSection: React.FC<ArticleSectionProps> = ({ className, articles, lo
   );
 };
 
-export default ArticleSection; 
+export default BookSummaryCarousel;

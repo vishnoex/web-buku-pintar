@@ -17,35 +17,40 @@ interface BookSummaryCarouselProps {
 
 const BookSummaryCarousel: React.FC<BookSummaryCarouselProps> = ({ className, books, loading, error }) => {
   return (
-    <section className={cn("py-8 md:py-12", className)}>
-      <div className="container px-4 md:px-6">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Book Summaries
-          </h2>
-          
-          <Button asChild variant="outline">
-            <Link href="/books">View All Books</Link>
-          </Button>
+    <section className={cn("py-2", className)}>
+      <div className="container">
+        <div className="flex items-center justify-between px-2">
+          <div>
+            <h2 className="text-base md:text-xl font-bold tracking-tight">
+              Ringkasan Buku
+            </h2>
+            <span className="text-xs">Bukan sekadar ringkasan, ini nutrisi untuk pikiranmu.</span>
+          </div>
+
+          <div className="margin-block-end">
+            <Button asChild variant="ghost">
+              <Link href="/books">Semua</Link>
+            </Button>
+          </div>
         </div>
 
-        <div className="relative w-full">
-          <ScrollArea className="w-full">
-            <div className="flex space-x-4 pb-4">
-              {loading ? (
-                <div className="text-muted-foreground">Loading...</div>
-              ) : error ? (
-                <div className="text-red-500">{error}</div>
-              ) : books.map((book) => (
-                <BookCard key={book.id} book={book} displayAudioPlayer={true} />
-              ))}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </div>
+        <ScrollArea className="w-full" type="auto">
+          <div className="flex gap-4 py-2 px-2">
+            {loading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <BookCard key={index} loading />
+              ))
+            ) : error ? (
+              <div className="text-red-500">{error}</div>
+            ) : books.map((book) => (
+              <BookCard key={book.id} book={book} displayAudioPlayer={true} />
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
     </section>
   );
 };
 
-export default BookSummaryCarousel; 
+export default BookSummaryCarousel;

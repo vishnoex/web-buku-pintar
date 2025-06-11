@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Ebook } from '@/models/Ebook';
+import { Heart } from 'lucide-react';
 
 interface BookCardProps {
   book?: Ebook;
@@ -22,12 +23,11 @@ const BookCard: React.FC<BookCardProps> = ({
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-green-100 p-4 flex flex-col items-center shadow w-60 relative animate-pulse" style={{ minHeight: 340 }}>
-        <div className="w-40 h-56 bg-white rounded-lg mb-4"></div>
-        <div className="text-center mb-2 w-full">
-          <div className="h-3 bg-white rounded w-1/2 mx-auto mb-1"></div>
-          <div className="h-4 bg-white rounded w-3/4 mx-auto mb-1"></div>
-          <div className="h-3 bg-white rounded w-2/3 mx-auto"></div>
+      <div className="rounded-2xl bg-gray-200 p-4 flex flex-col items-center shadow w-40 hc-75 relative animate-pulse" style={{ minHeight: 340 }}>
+        <div className="w-full hc-55 rounded-t-lg bg-gray-300 mb-4"></div>
+        <div className="text-center w-full">
+          <div className="h-5 bg-gray-300 rounded w-4/5 mx-auto mb-2"></div>
+          <div className="h-3 bg-gray-300 rounded w-1/4 mx-auto"></div>
         </div>
       </div>
     );
@@ -38,27 +38,34 @@ const BookCard: React.FC<BookCardProps> = ({
   return (
     <Link href={`/books/${book.slug}`}>
       <div
-        className="rounded-2xl bg-green-100 p-4 flex flex-col items-center shadow hover:shadow-lg transition cursor-pointer w-60 relative"
+        className="rounded-2xl bg-card shadow-sm transition-all hover:shadow-md overflow-hidden w-40 hc-75 relative"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        style={{ minHeight: 340 }}
       >
-        <div className="w-40 h-56 bg-white rounded-lg flex items-center justify-center mb-4 overflow-hidden">
+        <div className="relative w-full hc-55 aspect-video rounded-t-lg overflow-hidden bg-gradient-to-t from-black/60 via-black/30 to-transparent">
           <Image 
             src={book.coverImage}
             alt={book.title}
-            width={160}
+            width={320}
             height={224}
-            className="object-contain w-full"
+            className="object-cover w-full h-full absolute"
           />
+          <div className="relative z-10 p-4 flex flex-col justify-between h-full">
+            <div className="flex justify-between items-center ml-auto">
+              <button className="text-black hover:text-red-400 transition-colors">
+                <Heart className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="text-center mb-2">
-          <div className="text-xs text-gray-700 font-semibold mb-1">{book.author.name}</div>
-          <div className="text-base font-bold text-gray-900 mb-1">{book.title}</div>
-          {book.description && (
-            <div className="text-xs text-gray-600">{book.description}</div>
+
+        <div className="py-2 px-2">
+          <h3 className="font-semibold text-sm mb-2 line-clamp-2">{book.title}</h3>
+          {book.duration && (
+            <p className="text-xs text-gray-600">{book.duration} Menit</p>
           )}
         </div>
+
         {/* Audio player appears on hover */}
         {(hovered && displayAudioPlayer) && (
           <div className="absolute left-0 bottom-0 w-full bg-[#18304A] rounded-b-2xl flex items-center px-4 py-3 transition-all">

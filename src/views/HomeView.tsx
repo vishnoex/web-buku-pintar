@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Header from '@/components/organisms/Header';
 import HeroSection from '@/components/organisms/HeroSection';
 import BookSummaryCarousel from '@/components/organisms/BookSummaryCarousel';
+import BookSummaryPremuim from '@/components/organisms/BookSummaryPremium';
 import TopBookSection from '@/components/organisms/TopBookSection';
 import InspirationSection from '@/components/organisms/InspirationSection';
 import ArticleSection from '@/components/organisms/ArticleSection';
@@ -14,7 +15,7 @@ import SearchBar from '@/components/molecules/SearchBar';
 import { Star, BookOpen, Lightbulb, BookOpenCheck, FileText } from 'lucide-react';
 
 const HomeView: React.FC = () => {
-  const { categories, banners, inspirations, books, loading, error } = useHomeViewModel();
+  const { categories, banners, inspirations, books, articles, loading, error } = useHomeViewModel();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [search, setSearch] = useState('');
 
@@ -49,8 +50,9 @@ const HomeView: React.FC = () => {
         <InspirationSection inspirations={inspirations} loading={loading} error={error} />
         {/* <HighlightSection className='bg-slate-50' /> */}
         <BookSummaryCarousel books={books} loading={loading} error={error} />
+        <BookSummaryPremuim books={books} loading={loading} error={error} />
         <TopBookSection className='bg-slate-50' />
-        <ArticleSection className='bg-slate-50' />
+        <ArticleSection articles={articles} loading={loading} error={error} />
       </main>
     </div>
   );
