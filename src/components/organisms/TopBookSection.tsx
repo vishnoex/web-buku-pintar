@@ -21,28 +21,31 @@ const TopBookSection: React.FC<TopBookSectionProps> = ({ className }) => {
   }, [allBooks]);
 
   return (
-    <section className={cn("py-8 md:py-12", className)}>
-      <div className="container px-4 md:px-6">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Top Rated Books
-          </h2>
+    <section className={cn("py-2", className)}>
+      <div className="container">
+        <div className="flex items-center justify-between px-2">
+          <div>
+            <h2 className="text-base md:text-xl font-bold tracking-tight">
+              E-book
+            </h2>
+            <span className="text-xs">Buku-buku bermutu dalam genggamanmu.</span>
+          </div>
 
-          <Button asChild variant="outline">
-            <Link href="/books?sort=rating">View All</Link>
-          </Button>
+          <div className="margin-block-end">
+            <Button asChild variant="ghost">
+              <Link href="/books">Semua</Link>
+            </Button>
+          </div>
         </div>
 
-        <div className="relative w-full">
-          <ScrollArea className="w-full">
-            <div className="flex space-x-4 pb-4">
-              {topBooks.map((book) => (
-                <BookCard key={book.id} book={book} displayAudioPlayer={false} />
-              ))}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </div>
+        <ScrollArea className="w-full" type="auto">
+          <div className="flex gap-4 py-2 px-2">
+            {topBooks.map((book) => (
+              <BookCard key={book.id} book={book} displayAudioPlayer={false} />
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
     </section>
   );

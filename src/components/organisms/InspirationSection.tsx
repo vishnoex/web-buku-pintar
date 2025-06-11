@@ -2,39 +2,54 @@ import React from 'react';
 import { cn } from '@/utils/utils';
 import { Button } from '@/components/atoms/button';
 import Link from 'next/link';
-import { useMockInspirations } from '@/hooks/useMockInspirations';
+import { Inspiration } from '@/models/Inspiration';
 import InspirationCard from '@/components/molecules/InspirationCard';
+import { ScrollArea, ScrollBar } from '@/components/atoms/scroll-area';
 
 interface InspirationSectionProps {
   className?: string;
+  inspirations: Inspiration[];
+  loading?: boolean;
+  error?: string | null;
 }
 
-const InspirationSection: React.FC<InspirationSectionProps> = ({ className }) => {
-  const inspirations = useMockInspirations(3); // Get 3 mock inspirations
-  
+const InspirationSection: React.FC<InspirationSectionProps> = ({ className, inspirations, loading, error }) => {
   return (
-    <section className={cn("py-8 md:py-12", className)}>
-      <div className="container px-4 md:px-6">
-        <div className="py-8 text-center">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl xl:text-5xl/none">
-            Daily Inspiration
-          </h2>
-          <p className="mt-4 text-muted-foreground max-w-[600px] mx-auto">
-            Discover daily doses of motivation and wisdom to fuel your personal growth journey.
-          </p>
+    <section className={cn("py-2", className)}>
+      <div className="container">
+        <div className="flex items-center justify-between px-2">
+          <div>
+            <h2 className="text-base md:text-xl font-bold tracking-tight">
+            Inspirasi Hari Ini
+            </h2>
+            <span className="text-xs">Untuk motivasi biar Kamu semangat dan punya pola pikir positif setiap hari!</span>
+          </div>
+
+          <div className="margin-block-end">
+            <Button asChild variant="ghost">
+              <Link href="/inspirations?sort=published&direction=desc">Semua</Link>
+            </Button>
+          </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {inspirations.map((inspiration) => (
-            <InspirationCard key={inspiration.id} inspiration={inspiration} />
-          ))}
-        </div>
-
-        <div className="mt-8 text-center">
-          <Button asChild size="lg" className="bg-brand-blue hover:bg-brand-blue/90">
-            <Link href="/inspirations">View All Inspirations</Link>
-          </Button>
-        </div>
+        <ScrollArea className="w-full" type="auto">
+          <div className="flex gap-4 py-2 px-2">
+            {loading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <InspirationCard key={index} loading />
+              ))
+            ) : error ? (
+              <div className="text-red-500">{error}</div>
+            ) : inspirations && inspirations.length > 0 ? (
+              inspirations.map((inspiration) => (
+                <InspirationCard key={inspiration.id} inspiration={inspiration} />
+              ))
+            ) : (
+              <div className="text-muted-foreground">No banners available</div>
+            )}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
     </section>
   );

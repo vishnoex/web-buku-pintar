@@ -7,13 +7,15 @@ interface BookCoverProps {
   alt: string;
   className?: string;
   aspectRatio?: 'portrait' | 'square';
+  hoverScale?: true | false;
 }
 
 const BookCover: React.FC<BookCoverProps> = ({ 
   src, 
   alt, 
   className,
-  aspectRatio = 'portrait'
+  aspectRatio = 'portrait',
+  hoverScale = false
 }) => {
   return (
     <div className={cn(
@@ -24,7 +26,10 @@ const BookCover: React.FC<BookCoverProps> = ({
       <Image
         src={src}
         alt={alt}
-        className="h-full w-full object-cover transition-all hover:scale-105"
+        className={cn(
+          "h-full w-full object-cover transition-all",
+          hoverScale === true ? 'hover:scale-105' : ''
+        )}
         fill={true}
       />
     </div>
