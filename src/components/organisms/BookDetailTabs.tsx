@@ -6,12 +6,14 @@ import { ScrollArea, ScrollBar } from '@/components/atoms/scroll-area';
 import { Button } from '@/components/atoms/button';
 import { BookOpen, Play } from 'lucide-react';
 import { Ebook } from '@/models/Ebook';
+import { useRouter } from 'next/navigation';
 
 interface BookDetailTabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   book: Ebook;
   loading?: boolean;
+  slug: string;
 }
 
 const BookDetailTabs: React.FC<BookDetailTabsProps> = ({
@@ -19,7 +21,9 @@ const BookDetailTabs: React.FC<BookDetailTabsProps> = ({
   setActiveTab,
   book,
   loading = false,
+  slug,
 }) => {
+  const router = useRouter();
   const tabClass = (tabName: string) => cn(
     "py-2 px-4 text-sm rounded-lg transition-colors",
     activeTab === tabName
@@ -74,7 +78,7 @@ const BookDetailTabs: React.FC<BookDetailTabsProps> = ({
             <h2 className="text-xl font-bold mb-4">Ringkasan Buku</h2>
             <p className="mb-6">{book.description}</p>
             <div className="flex space-x-4">
-              <Button size="lg" className="flex-1 bg-primary text-white hover:bg-primary/90">
+              <Button size="lg" className="flex-1 bg-primary text-white hover:bg-primary/90" onClick={() => router.push(`/books/${slug}/summary`)}>
                 <BookOpen className="mr-2 h-5 w-5" /> Baca
               </Button>
               {book.hasAudioVersion && (
@@ -91,7 +95,7 @@ const BookDetailTabs: React.FC<BookDetailTabsProps> = ({
             <h2 className="text-xl font-bold mb-4">Intisari Buku</h2>
             <p className="mb-6">{book.description}</p>
             <div className="flex space-x-4">
-              <Button size="lg" className="flex-1 bg-primary text-white hover:bg-primary/90">
+              <Button size="lg" className="flex-1 bg-primary text-white hover:bg-primary/90" onClick={() => router.push(`/books/${slug}/premiumSummary`)}>
                 <BookOpen className="mr-2 h-5 w-5" /> Baca
               </Button>
               {book.hasAudioVersion && (
@@ -103,15 +107,25 @@ const BookDetailTabs: React.FC<BookDetailTabsProps> = ({
           </div>
         );
       case 'Sampel Gratis':
-        return <div className="prose max-w-none">Sampel Gratis</div>; // Placeholder
+        return (
+          <div className="prose max-w-none">
+            <h2 className="text-xl font-bold mb-4">Sampel Gratis</h2>
+            <p className="mb-6">{book.description}</p>
+            <div className="flex space-x-4">
+              <Button size="lg" className="flex-1 bg-primary text-white hover:bg-primary/90" onClick={() => router.push(`/books/${slug}/read`)}>
+                <BookOpen className="mr-2 h-5 w-5" /> Baca
+              </Button>
+            </div>
+          </div>
+        );
       default:
         return null;
     }
   };
 
   return (
-    <div className="md:col-span-2 mb-8">
-      <h3 className="text-xl text-center md:text-left font-bold mb-2">{book.title}</h3>
+    <div className="md:col-span-2">
+      <h1 className="text-3xl text-center md:text-left font-bold mb-2">{book.title}</h1>
       <div>
         <div className="mb-6">
           <ScrollArea className="w-full whitespace-nowrap rounded-md">

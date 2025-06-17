@@ -29,6 +29,12 @@
   - [ ] Pagination
   
 - [x] Detail book page
+  - [x] Sinopis
+  - [x] Daftar Isi
+  - [x] Ringkasan
+  - [x] Intisari
+  - [x] Sample Gratis
+
 - [ ] Detail article page
 
 ## Future Ideas

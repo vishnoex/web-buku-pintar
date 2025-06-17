@@ -31,6 +31,38 @@ export class EbookService extends BaseService {
 
   async getEbookBySlug(slug: string): Promise<ApiResponse<Ebook>> {
     if (config.useMockData) {
+      if (typeof window === 'undefined') {
+        // Server-side mock data for metadata generation
+        return {
+          data: {
+            id: slug,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            title: slug.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+            slug: slug,
+            description: `This is a mock description for ${slug.replace(/-/g, ' ')}.`,
+            coverImage: 'https://via.placeholder.com/400x600?text=Mock+Book',
+            author: { id: 'mock-author-id', name: 'Mock Author', avatar: '' },
+            categoryId: 'mock-category-id',
+            tags: [],
+            price: 0,
+            isFree: true,
+            status: 'published',
+            publishedAt: new Date(),
+            seoMetadata: { metaTitle: '', metaDescription: '', keywords: [] },
+            rating: { average: 0, count: 0 },
+            language: 'English',
+            duration: 0,
+            fileSize: 0,
+            format: 'EPUB',
+            pageCount: 0,
+            tableOfContents: [],
+            features: { hasBookmarks: false, hasNotes: false, hasHighlights: false, hasSearch: false },
+          } as Ebook,
+          status: 200,
+          message: 'Success',
+        };
+      }
       const mockEbooks = generateMockEbooks(1);
       await new Promise(resolve => setTimeout(resolve, config.mockDelay));
       return {
@@ -75,5 +107,19 @@ export class EbookService extends BaseService {
 
   async getFreeEbooks(params: PaginationParams): Promise<PaginatedResponse<Ebook[]>> {
     return this.getPaginated<Ebook[]>('/free', params);
+  }
+
+  async getEbookContentBySlug(): Promise<{ url: string; totalPages: number }> {
+    if (config.useMockData) {
+      await new Promise(resolve => setTimeout(resolve, config.mockDelay));
+      // Mock URL for a sample EPUB file (now served locally from public folder)
+      // const mockEpubUrl = 'https://react-reader.metabits.no/files/alice.epub';
+      const mockEpubUrl = "/Berbicara_Dari_Hati_Reflowable.epub";
+      // const mockEpubUrl = "/Sample_reflowable.epub";
+      return { url: mockEpubUrl, totalPages: 25 }; // Simulate 5 pages
+    }
+    // In a real scenario, this would fetch the actual ebook content URL
+    // For now, we'll return a placeholder
+    return { url: "https://react-reader.metabits.no/files/alice.epub", totalPages: 10 };
   }
 } 

@@ -21,7 +21,7 @@ const BookDetail: React.FC<BookDetailProps> = observer(({ slug }) => {
     return (
       <MainLayout>
         <div className="left-0 right-0 flex justify-between items-center p-4">
-          <div className="h-4 bg-gray-200 rounded w-full animate-pulse" />
+          <div className="h-10 bg-gray-200 rounded w-full animate-pulse" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-1 flex justify-center md:justify-start">
@@ -53,7 +53,7 @@ const BookDetail: React.FC<BookDetailProps> = observer(({ slug }) => {
         </div>
       </div>
 
-      <div className="container">
+      <div className="container mb-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
           {/* Book Cover */}
           <div className="md:col-span-1 flex justify-center md:justify-start">
@@ -63,7 +63,7 @@ const BookDetail: React.FC<BookDetailProps> = observer(({ slug }) => {
               <BookCover src={book.coverImage} alt={book.title} aspectRatio="portrait" className="relative w-full max-w-xs md:max-w-none" />
             )}
           </div>
-          <BookDetailTabs activeTab={activeTab} setActiveTab={setActiveTab} book={book} loading={loading} />
+          <BookDetailTabs activeTab={activeTab} setActiveTab={setActiveTab} book={book} loading={loading} slug={slug} />
         </div>
       </div>
     </MainLayout>
