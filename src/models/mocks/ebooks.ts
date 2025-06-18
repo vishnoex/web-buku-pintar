@@ -6,7 +6,7 @@ import { faker } from '@faker-js/faker';
 // Seed faker to ensure consistent data generation
 faker.seed(123);
 
-export const generateMockBooks = (count: number): Ebook[] => {
+export const generateMockEbooks = (count: number): Ebook[] => {
   return Array.from({ length: count }, (_, i) => {
     const hasDiscount = faker.datatype.boolean({ probability: 0.3 });
     const isFree = faker.datatype.boolean({ probability: 0.2 });
