@@ -6,44 +6,9 @@ import { useReadResumeViewModel } from '@/viewmodels/ReadSummaryViewModel';
 import MainLayout from '@/components/templates/MainLayout';
 import { Button } from '@/components/atoms/button';
 import { ChevronLeft, ChevronRight, Settings, Bookmark, List } from 'lucide-react';
-import ePub from 'epubjs';
+import { ReactReader, ReactReaderStyle } from "react-reader";
 import BookmarksList from '@/components/molecules/BookmarksList';
-
-interface EpubBook {
-  renderTo: (element: HTMLElement, options: RenderOptions) => EpubRendition;
-  destroy: () => void;
-}
-
-interface RenderOptions {
-  method?: string;
-  width?: string | number;
-  height?: string | number;
-  spread?: string;
-  allowScriptedContent?: boolean;
-}
-
-interface EpubRendition {
-  display: (target?: string | number) => void;
-  on: (event: string, callback: (location: EpubLocation) => void) => void;
-  prev: () => void;
-  next: () => void;
-  location: {
-    start: {
-      cfi: string;
-      index: number;
-    };
-  };
-  themes: {
-    default: (theme: object) => void;
-  };
-}
-
-interface EpubLocation {
-  start: {
-    cfi: string;
-    index: number;
-  };
-}
+import type { Rendition } from 'epubjs';
 
 interface ReadSummaryViewProps {
   slug: string;
@@ -66,84 +31,34 @@ const ReadResumeView: React.FC<ReadSummaryViewProps> = ({ slug }) => {
   
   const [location, setLocation] = useState<string | number>(0);
   const [showBookmarks, setShowBookmarks] = useState(false);
-  const viewerRef = useRef<HTMLDivElement>(null);
-  const bookRef = useRef<EpubBook | null>(null);
-  const renditionRef = useRef<EpubRendition | null>(null);
+  const renditionRef = useRef<Rendition | null>(null);
   const searchParams = useSearchParams();
   const params = URLSearchParams && new URLSearchParams(searchParams);
   const currentSectionIndex = (params && params.get("loc")) ? params.get("loc") : undefined;
 
   useEffect(() => {
-    if (url && viewerRef.current) {
-      // Initialize the book
-      bookRef.current = ePub(url) as unknown as EpubBook;
-      
-      // Render the book
-      renditionRef.current = bookRef.current?.renderTo(viewerRef.current, {
-        method: 'default',
-        width: '100%',
-        height: '100%',
-        spread: 'none',
-        allowScriptedContent: true,
-      });
-      
-      // Check for saved position
-      if (currentLocation && currentLocation.cfi) {
-        renditionRef.current?.display(currentLocation.cfi);
-      } else {
-        renditionRef.current?.display(currentSectionIndex || undefined);
+    if (currentLocation && currentLocation.cfi) {
+      setLocation(currentLocation.cfi);
+    } else if (currentSectionIndex) {
+      setLocation(currentSectionIndex);
+    }
+  }, [currentLocation, currentSectionIndex]);
+
+  const onLocationChanged = (loc: string) => {
+    setLocation(loc);
+    if (renditionRef.current) {
+      const { displayed } = renditionRef.current.location.start;
+      const page = displayed.page;
+      if (page !== currentPage) {
+        goToPage(page);
       }
-
-      renditionRef.current.themes.default({});
-      console.log(location);
-      
-      // Handle location changes
-      renditionRef.current.on('locationChanged', (loc: EpubLocation) => {
-        setLocation(loc.start.cfi);
-        // Save position whenever location changes
-        if (loc.start.cfi) {
-          updateCurrentLocation(loc.start.cfi, currentPage);
-        }
-      });
-      
-      // Cleanup
-      return () => {
-        if (bookRef.current) {
-          bookRef.current.destroy();
-        }
-      };
+      updateCurrentLocation(loc, page);
     }
-  }, [url, slug, currentLocation, currentPage, currentSectionIndex, location, updateCurrentLocation]);
+  };
 
-  // Handle page navigation events
-  useEffect(() => {
-    if (renditionRef.current) {
-      // Listen for page changes from the rendition
-      renditionRef.current.on('relocated', (location: EpubLocation) => {
-        // Update the current page in the view model
-        const currentCfi = location.start.cfi;
-        const spineItem = location.start.index;
-        
-        // Update the current page number based on spine position
-        const newPage = spineItem + 1; // spine is 0-indexed, pages are 1-indexed
-        if (newPage !== currentPage) {
-          goToPage(newPage);
-        }
-        
-        // Save position whenever page changes
-        if (currentCfi) {
-          updateCurrentLocation(currentCfi, newPage);
-        }
-      });
-    }
-  }, [currentPage, goToPage, updateCurrentLocation]);
-
-  // Add bookmark functionality
   const addBookmark = () => {
-    if (renditionRef.current) {
-      const currentCfi = renditionRef.current.location.start.cfi;
-      const success = saveBookmark(currentCfi, currentPage, `Bookmark at page ${currentPage}`);
-      
+    if (location) {
+      const success = saveBookmark(location.toString(), currentPage, `Bookmark at page ${currentPage}`);
       if (success) {
         alert('Bookmark added!');
       } else {
@@ -152,12 +67,9 @@ const ReadResumeView: React.FC<ReadSummaryViewProps> = ({ slug }) => {
     }
   };
 
-  // Handle bookmark selection
   const handleSelectBookmark = (cfi: string) => {
-    if (renditionRef.current) {
-      renditionRef.current.display(cfi);
-      setShowBookmarks(false);
-    }
+    setLocation(cfi);
+    setShowBookmarks(false);
   };
 
   if (loading) {
@@ -235,12 +147,33 @@ const ReadResumeView: React.FC<ReadSummaryViewProps> = ({ slug }) => {
         )}
 
         {/* Ebook Content */}
-        <div style={{ height: '100vh', paddingTop: '60px', paddingBottom: '60px' }}>
-          <div ref={viewerRef} style={{ width: '100%', height: '100%' }}></div>
+        <div style={{ height: '100vh' }}>
+          <ReactReader
+            url={url}
+            location={location}
+            locationChanged={onLocationChanged}
+            showToc={false}
+
+            epubOptions={
+              {
+                manager: 'continuous',
+                flow: 'scrolled',
+              }
+            }
+            // getRendition={(_rendition: Rendition) => {
+            //   _rendition.hooks.content.register((contents: Contents) => {
+            //     // @ts-ignore - manager type is missing in epubjs Rendition
+            //     _rendition.manager.container.style['scroll-behavior'] = 'smooth'
+            //   })
+            //   renditionRef.current = _rendition;
+            //   renditionRef.current.themes.fontSize(largeText ? '140%' : '100%')
+            // }}
+            readerStyles={ReactReaderStyle}
+          />
         </div>
 
         {/* Pagination Controls */}
-        <div className="fixed bottom-0 left-0 right-0 z-20 bg-white shadow-sm py-4 px-4 flex justify-between items-center">
+        <div className="fixed bottom-0 left-0 right-0 z-20 bg-white shadow-sm py-4 px-4 hidden justify-between items-center">
           <Button onClick={() => {
             if (renditionRef.current) {
               renditionRef.current.prev();

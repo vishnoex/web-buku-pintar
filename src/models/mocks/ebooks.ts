@@ -19,7 +19,8 @@ export const generateMockEbooks = (count: number): Ebook[] => {
       title: faker.commerce.productName() + ' Book ' + (i + 1),
       slug: faker.helpers.slugify((faker.commerce.productName() + ' Book ' + (i + 1)).toLowerCase()),
       description: faker.lorem.paragraph(),
-      coverImage: faker.image.urlLoremFlickr({ category: 'book,cover', width: 400, height: 600 }),
+      // coverImage: faker.image.urlLoremFlickr({ category: 'book,cover', width: 400, height: 600 }),
+      coverImage: 'http://localhost:3000/books/covers/' + (i + 1) + '.jpg',
       author: {
         id: faker.string.uuid(),
         name: faker.person.fullName(),
