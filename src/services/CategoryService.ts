@@ -7,8 +7,8 @@ import config from '@/config/app.config';
 const generateMockCategories = (): Category[] => {
   const base = [
     { name: 'Semua', slug: 'all', description: 'Semua kategori', icon: 'star', order: 0, isActive: true },
-    { name: 'Ringkasan', slug: 'ringkasan', description: 'Ringkasan buku', icon: 'book-open', order: 1, isActive: true },
     { name: 'Inspirasi', slug: 'inspirasi', description: 'Inspirasi', icon: 'lightbulb', order: 2, isActive: true },
+    { name: 'Ringkasan', slug: 'ringkasan', description: 'Ringkasan buku', icon: 'book-open', order: 1, isActive: true },
     { name: 'E-Book', slug: 'books', description: 'E-Book', icon: 'book-open-check', order: 3, isActive: true },
     { name: 'Artikel', slug: 'artikel', description: 'Artikel', icon: 'file-text', order: 4, isActive: true },
   ];

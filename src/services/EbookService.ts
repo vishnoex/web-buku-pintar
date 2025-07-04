@@ -114,8 +114,9 @@ export class EbookService extends BaseService {
       await new Promise(resolve => setTimeout(resolve, config.mockDelay));
       // Mock URL for a sample EPUB file (now served locally from public folder)
       // const mockEpubUrl = 'https://react-reader.metabits.no/files/alice.epub';
-      const mockEpubUrl = "/Berbicara_Dari_Hati_Reflowable.epub";
-      // const mockEpubUrl = "/Sample_reflowable.epub";
+      const mockEpubUrl = "/Sample.epub";
+      // const mockEpubUrl = "/Around_the_World_in_28_Languages.epub";
+      // const mockEpubUrl = "/Berbicara_Dari_Hati_Fixed_Layout.epub";
       return { url: mockEpubUrl, totalPages: 25 }; // Simulate 5 pages
     }
     // In a real scenario, this would fetch the actual ebook content URL

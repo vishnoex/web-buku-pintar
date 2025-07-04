@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useReadPageViewModel } from '@/viewmodels/ReadPageViewModel';
 import MainLayout from '@/components/templates/MainLayout';
 import { Button } from '@/components/atoms/button';
-import { ChevronLeft, ChevronRight, BookOpen, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BookOpen, Settings, Maximize2 } from 'lucide-react';
 import ePub from 'epubjs';
 
 // Define types for epubjs objects
@@ -43,6 +43,11 @@ interface EpubLocation {
   };
 }
 
+type FullscreenElement = HTMLElement & {
+  webkitRequestFullscreen?: () => Promise<void> | void;
+  msRequestFullscreen?: () => Promise<void> | void;
+};
+
 interface ReadPageViewProps {
   slug: string;
 }
@@ -56,6 +61,7 @@ const ReadPageView: React.FC<ReadPageViewProps> = ({ slug }) => {
   const searchParams = useSearchParams();
   const params = URLSearchParams && new URLSearchParams(searchParams);
   const currentSectionIndex = (params && params.get("loc")) ? params.get("loc") || undefined : undefined;
+  const [isFullscreenFallback, setIsFullscreenFallback] = useState(false);
 
   useEffect(() => {
     if (url && viewerRef.current) {
@@ -65,7 +71,7 @@ const ReadPageView: React.FC<ReadPageViewProps> = ({ slug }) => {
       // Render the book
       renditionRef.current = bookRef.current.renderTo(viewerRef.current, {
         allowScriptedContent: true,
-        // flow: "paginated"
+        // flow: "paginated",
         manager: "continuous",
         flow: "scrolled",
         width: "100%",
@@ -108,6 +114,27 @@ const ReadPageView: React.FC<ReadPageViewProps> = ({ slug }) => {
       });
     }
   }, [currentPage, goToPage]);
+
+  // Add fullscreen handler
+  const handleFullscreen = () => {
+    const viewer = viewerRef.current;
+    if (!viewer) return;
+    // Fullscreen API
+    if (viewer.requestFullscreen) {
+      viewer.requestFullscreen();
+    } else if ((viewer as FullscreenElement).webkitRequestFullscreen) {
+      (viewer as FullscreenElement).webkitRequestFullscreen!();
+    } else if ((viewer as FullscreenElement).msRequestFullscreen) {
+      (viewer as FullscreenElement).msRequestFullscreen!();
+    } else {
+      // Fallback for iOS Safari and unsupported browsers
+      setIsFullscreenFallback(true);
+      // Optionally, show a message
+      if (typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        alert('Fullscreen is not supported on this device. Maximizing the reader instead.');
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -155,6 +182,9 @@ const ReadPageView: React.FC<ReadPageViewProps> = ({ slug }) => {
           </Button>
           <span className="text-lg font-semibold">Page {currentPage} of {totalPages}</span>
           <div className="flex space-x-2">
+            <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-100" onClick={handleFullscreen}>
+              <Maximize2 className="h-6 w-6" />
+            </Button>
             <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-100">
               <BookOpen className="h-6 w-6" />
             </Button>
@@ -165,12 +195,16 @@ const ReadPageView: React.FC<ReadPageViewProps> = ({ slug }) => {
         </div>
 
         {/* Ebook Content */}
-        <div style={{ height: '100vh', paddingTop: '60px', paddingBottom: '60px' }}>
-          <div ref={viewerRef} style={{ width: '100%', height: '100%' }}></div>
+        <div style={{ height: '100vh', paddingBottom: '60px' }}>
+          <div
+            ref={viewerRef}
+            style={{ width: '100%', height: '100%' }}
+            className={isFullscreenFallback ? 'fullscreen-fallback' : ''}
+          ></div>
         </div>
 
         {/* Pagination Controls */}
-        <div className="fixed bottom-0 left-0 right-0 z-20 bg-white shadow-sm py-4 px-4 flex justify-between items-center">
+        <div className="fixed bottom-0 left-0 right-0 z-20 bg-white shadow-sm py-4 px-4 hidden justify-between items-center">
           <Button onClick={() => {
             if (renditionRef.current) {
               renditionRef.current.prev();
@@ -190,5 +224,25 @@ const ReadPageView: React.FC<ReadPageViewProps> = ({ slug }) => {
     </MainLayout>
   );
 };
+
+// Mobile fullscreen fallback CSS
+<style jsx global>{`
+  .fullscreen-fallback {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999;
+    background: #fff;
+  }
+  @media (max-width: 768px) {
+    .fullscreen-fallback {
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+    }
+  }
+`}</style>
 
 export default ReadPageView;
